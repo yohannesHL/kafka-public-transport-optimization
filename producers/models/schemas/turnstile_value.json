@@ -4,7 +4,7 @@
   "fields":  [
       {"name": "station_id", "type": "str"},
       {"name": "station_name", "type": "str"},
-      {"name": "line", "type": "str"} 
+      {"name": "num_entries", "type": "int"} 
     ]
   }
   
