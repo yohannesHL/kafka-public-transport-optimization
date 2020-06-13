@@ -5,9 +5,9 @@ import logging
 from pathlib import Path
 import random
 import urllib.parse
-
 import requests
-
+from datetime import datetime
+from confluent_kafka import avro
 from models.producer import Producer
 
 
@@ -37,7 +37,7 @@ class Weather(Producer):
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
             num_partitions=1,
-            replication_factor=1
+            num_replicas=1
         )
 
         self.status = Weather.status.sunny
@@ -68,16 +68,21 @@ class Weather(Producer):
     def run(self, month):
         self._set_weather(month)
 
+        logger.info(f"emitting weather data to topic: {self.topic_name}")
+
         resp = requests.post(
            f"{Weather.rest_proxy_url}/{self.topic_name}",
            headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
            data=json.dumps(
                {
-                   "key_schema": self.key_schema,
-                   "value_schema": self.value_schema,
+                   "key_schema": self.key_schema.to_json(),
+                   "value_schema": self.value_schema.to_json(),
                    "records": [{ 
-                       "key": { "timestamp": datetime.now() }, 
-                       "value": asdict(self) 
+                       "key": { "timestamp": datetime.now().timestamp() }, 
+                       "value": {
+                           "temp": self.temp,
+                           "status": self.status.name 
+                       }
                     }]
                }
            ),

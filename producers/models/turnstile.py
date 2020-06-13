@@ -13,10 +13,7 @@ logger = logging.getLogger(__name__)
 
 class Turnstile(Producer):
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/turnstile_key.json")
-
-    value_schema = avro.load(
-       f"{Path(__file__).parents[0]}/schemas/turnstile_value.json"
-    )
+    value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/turnstile_value.json")
 
     def __init__(self, station):
         """Create the Turnstile"""
@@ -40,14 +37,18 @@ class Turnstile(Producer):
 
     def run(self, timestamp, time_step):
         """Simulates riders entering through the turnstile."""
+        
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
-        logger.info("turnstile kafka integration incomplete - skipping")
+        logger.info(f"emitting turnstile data to topic: {self.topic_name}")
+
+
         self.producer.produce(
            topic=self.topic_name,
            key={"timestamp": timestamp},
            value={
                "station_id": self.station.station_id,
-               "station_name": self.station.station_name,
+               "station_name": self.station.name,
+               "line": self.station.color.name,
                "num_entries": num_entries
            },
         )

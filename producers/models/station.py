@@ -15,7 +15,6 @@ class Station(Producer):
     """Defines a single station"""
 
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_key.json")
-
     value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_value.json")
 
     def __init__(self, station_id, name, color, direction_a=None, direction_b=None):
@@ -48,7 +47,9 @@ class Station(Producer):
 
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
-        logger.info(f"publishing to topic: {self.topic_name}")
+
+        logger.info(f"emitting station data to topic: {self.topic_name}")
+    
         self.producer.produce(
            topic=self.topic_name,
            key={"timestamp": self.time_millis()},
@@ -56,10 +57,11 @@ class Station(Producer):
                "station_id": self.station_id,
                "prev_station_id": prev_station_id,
                "train_id": train.train_id,
-               "train_status": train.train_status,
+               "train_status": train.status,
                "direction": direction,
-               "prev_direction": prev_direction
-           },
+               "prev_direction": prev_direction,
+               "line": self.color.name
+           }
         )
 
     def __str__(self):

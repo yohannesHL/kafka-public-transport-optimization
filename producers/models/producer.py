@@ -36,7 +36,6 @@ class Producer:
         #
         self.broker_properties = {
             "bootstrap.servers": KAFKA_BROKER,
-            "schema.registry.url": SCHEMA_REGISTRY_URL
         }
 
         # If the topic does not already exist, try to create it
@@ -45,21 +44,25 @@ class Producer:
             Producer.existing_topics.add(self.topic_name)
 
         self.producer = AvroProducer(
-            self.broker_properties
+            {   
+                **self.broker_properties,
+                "schema.registry.url": SCHEMA_REGISTRY_URL
+            },
+            default_key_schema = self.key_schema,
+            default_value_schema = self.value_schema
         )
 
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
         client = AdminClient(self.broker_properties)
-        topics = client.list_topics()
+        meta = client.list_topics()
 
-        if self.topic_name in topics:
+        if self.topic_name in meta.topics:
             logger.info(f"topic {self.topic_name} already exists in kafka broker - skipping topic creation")
             return
 
-        topic = NewTopic(self.topic_name, num_partitions=self.num_partitions, replication_factor=self.replication_factor)
+        topic = NewTopic(self.topic_name, num_partitions=self.num_partitions, replication_factor=self.num_replicas)
         client.create_topics([topic])
-        client.close()
 
 
     def time_millis(self):
