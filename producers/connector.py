@@ -7,7 +7,6 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-# TODO: move to .env file
 KAFKA_CONNECT_URL = "http://connect:8083/connectors"
 CONNECTOR_NAME = "stations"
 POSTGRES_USER =  "cta_admin"
@@ -35,7 +34,7 @@ def configure_connector():
                "value.converter": "org.apache.kafka.connect.json.JsonConverter",
                "value.converter.schemas.enable": "false",
                "batch.max.rows": "500",
-               "connection.url": "jdbc:postgresql://postgres_1:5432/stations",
+               "connection.url": "jdbc:postgresql://postgres:5432/cta",              
                "connection.user": "cta_admin",
                "connection.password": "chicago",
                "table.whitelist": "stations",
