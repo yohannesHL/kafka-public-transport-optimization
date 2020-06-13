@@ -1,13 +1,35 @@
 {
-"type": "record",
-"name": "arrival.value",
-"fields":  [
-    {"name": "station_id", "type": "str"},
-    {"name": "train_id", "type": "str"},
-    {"name": "prev_station_id", "type": "str"},
-    {"name": "direction", "type": "str"},
-    {"name": "line", "type": "str"},  
-    {"name": "train_status", "type": "str"},
-    {"name": "prev_direction", "type": "str"}
+  "namespace": "com.udacity",
+  "type": "record",
+  "name": "arrival.value",
+  "fields": [
+    {
+      "name": "station_id",
+      "type": "int"
+    },
+    {
+      "name": "prev_station_id",
+      "type": ["int", "null"]
+    },
+    {
+      "name": "train_id",
+      "type": "int"
+    },
+    {
+      "name": "train_status",
+      "type": "string"
+    },
+    {
+      "name": "direction",
+      "type": "string"
+    },
+    {
+      "name": "prev_direction",
+      "type": ["string", "null"]
+    },
+    {
+      "name": "line",
+      "type": "string"
+    }
   ]
 }
