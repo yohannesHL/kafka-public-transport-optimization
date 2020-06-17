@@ -1,11 +1,11 @@
 {
-  "namespace": "com.udacity",
+  "namespace": "org.chicago.cta.trainstation.riders",
   "type": "record",
   "name": "turnstile.value",
   "fields": [
     {
       "name": "station_id",
-      "type": "string"
+      "type": "int"
     },
     {
       "name": "station_name",
@@ -14,10 +14,6 @@
     {
       "name": "line",
       "type": "string"
-    },
-    {
-      "name": "num_entries",
-      "type": "int"
     }
   ]
 }

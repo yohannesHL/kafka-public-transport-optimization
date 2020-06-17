@@ -9,9 +9,6 @@ logger = logging.getLogger(__name__)
 
 KAFKA_CONNECT_URL = "http://connect:8083/connectors"
 CONNECTOR_NAME = "stations"
-POSTGRES_USER =  "cta_admin"
-POSTGRES_PASSWORD = "chicago"
-POSTGRES_DB = "cta"
 
 def configure_connector():
     """Starts and configures the Kafka Connect connector"""
@@ -34,14 +31,14 @@ def configure_connector():
                "value.converter": "org.apache.kafka.connect.json.JsonConverter",
                "value.converter.schemas.enable": "false",
                "batch.max.rows": "500",
-               "connection.url": "jdbc:postgresql://postgres:5432/cta",              
+               "connection.url": "jdbc:postgresql://postgres:5432/cta",             
                "connection.user": "cta_admin",
                "connection.password": "chicago",
                "table.whitelist": "stations",
                "mode": "incrementing",
                "incrementing.column.name": "stop_id",
-               "topic.prefix": "cta.",
-               "poll.interval.ms": "300000",
+               "topic.prefix": "org.chicago.cta.trainstation.",
+               "poll.interval.ms": "60000",
            }
        }),
     )
@@ -49,9 +46,7 @@ def configure_connector():
     try:
         resp.raise_for_status()
     except:
-        print('Error', resp.text)
-
-        logging.debug("error creating connector", resp.text)
+        logging.debug("error creating connector %s", resp.text)
 
     logging.debug("connector created successfully")
 

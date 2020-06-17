@@ -4,7 +4,7 @@ import json
 import logging
 from pathlib import Path
 import random
-import urllib.parse
+from urllib.error import HTTPError
 import requests
 from datetime import datetime
 from confluent_kafka import avro
@@ -22,7 +22,7 @@ class Weather(Producer):
     )
 
     rest_proxy_url = "http://rest-proxy:8082"
-
+    topic_name = "org.chicago.cta.weather"
 
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/weather_key.json")
     value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/weather_value.json")
@@ -33,7 +33,7 @@ class Weather(Producer):
     def __init__(self, month):
 
         super().__init__(
-            "geo.chicago.weather",
+            self.topic_name,
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
             num_partitions=1,
@@ -70,29 +70,29 @@ class Weather(Producer):
 
         logger.info(f"emitting weather data to topic: {self.topic_name}")
 
+        weather_records = {
+            "key_schema": json.dumps(self.key_schema.to_json()),
+            "value_schema": json.dumps(self.value_schema.to_json()),
+            "records": [{ 
+                "key": { "timestamp": self.time_millis() }, 
+                "value": {
+                    "temperature": self.temp,
+                    "status": self.status.name 
+                }
+            }]
+        }
+
         resp = requests.post(
-           f"{Weather.rest_proxy_url}/{self.topic_name}",
-           headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
-           data=json.dumps(
-               {
-                   "key_schema": self.key_schema.to_json(),
-                   "value_schema": self.value_schema.to_json(),
-                   "records": [{ 
-                       "key": { "timestamp": datetime.now().timestamp() }, 
-                       "value": {
-                           "temp": self.temp,
-                           "status": self.status.name 
-                       }
-                    }]
-               }
-           ),
+           f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
+           headers={ "Content-Type": "application/vnd.kafka.avro.v2+json" },
+           data=json.dumps(weather_records),
         )
 
         try:
             resp.raise_for_status()
-        except:
+        except HTTPError:
             logger.debug(
-                "failed to send weather data via kafka rest proxy", resp
+                "failed to send weather data via kafka rest proxy: %s", resp.text
             )
 
         logger.debug(

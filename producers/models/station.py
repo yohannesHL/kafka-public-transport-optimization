@@ -1,9 +1,7 @@
 """Methods pertaining to loading and configuring CTA "L" station data."""
 import logging
 from pathlib import Path
-
 from confluent_kafka import avro
-
 from models import Turnstile
 from models.producer import Producer
 
@@ -19,21 +17,21 @@ class Station(Producer):
 
     def __init__(self, station_id, name, color, direction_a=None, direction_b=None):
         self.name = name
-        station_name = (
+        self.station_name = (
             self.name.lower()
             .replace("/", "_and_")
             .replace(" ", "_")
             .replace("-", "_")
             .replace("'", "")
         )
+        self.topic_name = "org.chicago.cta.trainstation.arrivals"
 
-        topic_name = f"cta.stations.{station_name}.arrivals"
         super().__init__(
-            topic_name,
+            self.topic_name,
             key_schema=Station.key_schema,
             value_schema=Station.value_schema, 
-            num_partitions=3,
-            num_replicas=2,
+            num_partitions=2,
+            num_replicas=1,
         )
 
         self.station_id = int(station_id)
@@ -48,16 +46,16 @@ class Station(Producer):
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
 
-        logger.info(f"emitting station data to topic: {self.topic_name}")
-    
+        logger.info(f"emitting {self.station_name} station data to topic: {self.topic_name}")
         self.producer.produce(
            topic=self.topic_name,
-           key={"timestamp": self.time_millis()},
+           value_schema=self.value_schema,
+           key={ "timestamp": self.time_millis() },
            value={
                "station_id": self.station_id,
                "prev_station_id": prev_station_id,
                "train_id": train.train_id,
-               "train_status": train.status,
+               "train_status": train.status.name,
                "direction": direction,
                "prev_direction": prev_direction,
                "line": self.color.name

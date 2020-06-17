@@ -1,5 +1,5 @@
 {
-  "namespace": "com.udacity",
+  "namespace": "org.chicago.cta.weather",
   "type": "record",
   "name": "weather.key",
   "fields": [
