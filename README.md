@@ -1,11 +1,11 @@
 # Public Transport Optimization with Apache Kafka
-A streaming event pipeline using Apache Kafka and its ecosystem. Using public data sourced from the [Chicago Transit Authority](https://www.transitchicago.com/data/) we've constructed an event pipeline around that allows us to simulate and display the status of train lines in real time. We have used Kafka and ecosystem tools such as REST Proxy, Kafka Connect, Faust Streams and KSQL to accomplish this task.
+A streaming event pipeline using Apache Kafka and its ecosystem. Using public data sourced from the [Chicago Transit Authority](https://www.transitchicago.com/data/) we've constructed an event pipeline around that allows us to simulate and display the system status in real time. We have used Kafka and ecosystem tools such as REST Proxy, Kafka Connect, Faust Streams and KSQL to accomplish this task.
 
-Our architecture will look like so:
+Our architecture looks like so:
 
 ![Project Architecture](images/diagram.png)
 
-The UI will display system status for its commuters. We have decided to use Kafka and ecosystem tools like REST Proxy and Kafka Connect to accomplish this task.
+The UI will display the status of train lines and looks like so:
 
 ![Project Architecture](images/ui.png)
 
@@ -49,7 +49,7 @@ When configuring services that run within Docker Compose, like **Kafka Connect y
 
 There are two pieces to the simulation, the `producer` and `consumer`. Open a terminal window for each of the following components and run them at the same time: 
 
-#### To run the `producer`:
+#### 1. The `producer`:
 
 1. `cd producers`
 2. `virtualenv venv`
@@ -57,7 +57,7 @@ There are two pieces to the simulation, the `producer` and `consumer`. Open a te
 4. `pip install -r requirements.txt`
 5. `python simulation.py`
 
-#### To run the Faust Stream Processing Application:
+#### 2. The Faust Stream Processing Application:
 1. `cd consumers`
 2. `virtualenv venv`
 3. `. venv/bin/activate`
@@ -65,14 +65,14 @@ There are two pieces to the simulation, the `producer` and `consumer`. Open a te
 5. `faust -A faust_stream worker -l info`
 
 
-#### To run the KSQL Creation Script:
+#### 3. The KSQL Creation Script:
 1. `cd consumers`
 2. `virtualenv venv`
 3. `. venv/bin/activate`
 4. `pip install -r requirements.txt`
 5. `python ksql.py`
 
-#### To run the `consumer`:
+#### 4. The `consumer`:
 
 1. `cd consumers`
 2. `virtualenv venv`
