@@ -1,13 +1,13 @@
 """Configures a Kafka Connector for Postgres Station data"""
 import json
 import logging
-
+import os
 import requests
 
 
 logger = logging.getLogger(__name__)
 
-KAFKA_CONNECT_URL = "http://connect:8083/connectors"
+KAFKA_CONNECT_URL = os.getenv('KAFKA_CONNECT_URL', "http://localhost:8083/connectors") 
 CONNECTOR_NAME = "stations"
 
 def configure_connector():

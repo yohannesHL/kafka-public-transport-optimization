@@ -1,6 +1,6 @@
 """Defines core consumer functionality"""
 import logging
-
+import os
 import confluent_kafka
 from confluent_kafka import Consumer, OFFSET_BEGINNING
 from confluent_kafka.avro import AvroConsumer
@@ -10,8 +10,8 @@ from tornado import gen
 
 logger = logging.getLogger(__name__)
 
-KAFKA_BROKER = "PLAINTEXT://kafka:9092"
-SCHEMA_REGISTRY_URL = "http://schema-registry:8081"
+KAFKA_BROKER_URL = os.getenv('KAFKA_BROKER_URL', "PLAINTEXT://localhost:9092") 
+SCHEMA_REGISTRY_URL = os.getenv('SCHEMA_REGISTRY_URL', "http://localhost:8081") 
 
 class KafkaConsumer:
     """Defines the base kafka consumer class"""
@@ -33,7 +33,7 @@ class KafkaConsumer:
         self.offset_earliest = offset_earliest
   
         self.broker_properties = {
-            "bootstrap.servers": KAFKA_BROKER,
+            "bootstrap.servers": KAFKA_BROKER_URL,
             "group.id": "cta-train-status"
         }
 

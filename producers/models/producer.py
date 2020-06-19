@@ -1,14 +1,15 @@
 """Producer base-class providing common utilites and functionality"""
 import logging
 import time
+import os
 from io import BytesIO
 from confluent_kafka import avro
 from confluent_kafka.admin import AdminClient, NewTopic
 from confluent_kafka.avro import AvroProducer, CachedSchemaRegistryClient
 from fastavro import parse_schema, writer
 
-KAFKA_BROKER = "PLAINTEXT://kafka:9092"
-SCHEMA_REGISTRY_URL = "http://schema-registry:8081"
+KAFKA_BROKER_URL = os.getenv('KAFKA_BROKER_URL', "PLAINTEXT://localhost:9092") 
+SCHEMA_REGISTRY_URL = os.getenv('SCHEMA_REGISTRY_URL', "http://localhost:8081") 
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,6 @@ class Producer:
     # Tracks existing topics across all Producer instances
     existing_topics = set([])
 
-    schema_registry = CachedSchemaRegistryClient(SCHEMA_REGISTRY_URL)
 
     def __init__(
         self,
@@ -37,7 +37,7 @@ class Producer:
         self.num_replicas = num_replicas
 
         self.broker_properties = {
-            "bootstrap.servers": KAFKA_BROKER
+            "bootstrap.servers": KAFKA_BROKER_URL
         }
 
         # If the topic does not already exist, try to create it
@@ -46,8 +46,10 @@ class Producer:
             Producer.existing_topics.add(self.topic_name)
 
         self.producer = AvroProducer(
-            self.broker_properties,
-            schema_registry=self.schema_registry,
+            {
+                **self.broker_properties,
+                "schema.registry.url": SCHEMA_REGISTRY_URL
+            },
             default_key_schema = self.key_schema,
             default_value_schema = self.value_schema
         )

@@ -2,12 +2,13 @@
 import json
 import logging
 import requests
+import os
 from topic_check import topic_exists
 
 logger = logging.getLogger(__name__)
 
 
-KSQL_URL = "http://ksql:8088"
+KSQL_URL = os.getenv("KSQL_URL", "http://localhost:8088")
 
 KSQL_STATEMENT = """
 CREATE TABLE turnstile (
