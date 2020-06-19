@@ -1,13 +1,14 @@
 # Public Transport Optimization with Apache Kafka
-A streaming event pipeline using Apache Kafka and its ecosystem. Using public data sourced from the [Chicago Transit Authority](https://www.transitchicago.com/data/) we've constructed an event pipeline around Kafka that allows us to simulate and display the status of train lines in real time.
-
-## Description
-
-The Chicago Transit Authority (CTA) has asked us to develop a dashboard displaying system status for its commuters. We have decided to use Kafka and ecosystem tools like REST Proxy and Kafka Connect to accomplish this task.
+A streaming event pipeline using Apache Kafka and its ecosystem. Using public data sourced from the [Chicago Transit Authority](https://www.transitchicago.com/data/) we've constructed an event pipeline around that allows us to simulate and display the status of train lines in real time. We have used Kafka and ecosystem tools such as REST Proxy, Kafka Connect, Faust Streams and KSQL to accomplish this task.
 
 Our architecture will look like so:
 
 ![Project Architecture](images/diagram.png)
+
+The UI will display system status for its commuters. We have decided to use Kafka and ecosystem tools like REST Proxy and Kafka Connect to accomplish this task.
+
+![Project Architecture](images/ui.png)
+
 
 ## Prerequisites
 
@@ -20,8 +21,7 @@ The following are required:
 
 ## Running and Testing
 
-To run the simulation, you must first start up the Kafka ecosystem on their machine utilizing Docker Compose.
-
+To run the simulation, you must first start up the Kafka ecosystem:
 ```%> docker-compose up```
 
 Docker compose will take a 3-5 minutes to start, depending on your hardware. Please be patient and wait for the docker-compose logs to slow down or stop before beginning the simulation.
@@ -43,13 +43,11 @@ Once docker-compose is ready, the following services will be available:
 
 Note that to access these services from your own machine, you will always use the `Host URL` column.
 
-When configuring services that run within Docker Compose, like **Kafka Connect you must use the Docker URL**. When you configure the JDBC Source Kafka Connector, for example, you will want to use the value from the `Docker URL` column.
+When configuring services that run within Docker Compose, like **Kafka Connect you must use the Docker URL**.
 
 ### Running the Simulation
 
-There are two pieces to the simulation, the `producer` and `consumer`. As you develop each piece of the code, it is recommended that you only run one piece of the project at a time.
-
-However, when you are ready to verify the end-to-end system prior to submission, it is critical that you open a terminal window for each piece and run them at the same time. **If you do not run both the producer and consumer at the same time you will not be able to successfully complete the project**.
+There are two pieces to the simulation, the `producer` and `consumer`. Open a terminal window for each of the following components and run them at the same time: 
 
 #### To run the `producer`:
 
@@ -58,8 +56,6 @@ However, when you are ready to verify the end-to-end system prior to submission,
 3. `. venv/bin/activate`
 4. `pip install -r requirements.txt`
 5. `python simulation.py`
-
-Once the simulation is running, you may hit `Ctrl+C` at any time to exit.
 
 #### To run the Faust Stream Processing Application:
 1. `cd consumers`
@@ -78,11 +74,9 @@ Once the simulation is running, you may hit `Ctrl+C` at any time to exit.
 
 #### To run the `consumer`:
 
-** NOTE **: Do not run the consumer until you have reached Step 6!
 1. `cd consumers`
 2. `virtualenv venv`
 3. `. venv/bin/activate`
 4. `pip install -r requirements.txt`
 5. `python server.py`
 
-Once the server is running, you may hit `Ctrl+C` at any time to exit.
