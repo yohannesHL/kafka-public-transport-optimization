@@ -2,7 +2,6 @@
 import logging
 import logging.config
 from pathlib import Path
-
 import tornado.ioloop
 import tornado.template
 import tornado.web
@@ -14,11 +13,19 @@ logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
 
 from consumer import KafkaConsumer
 from models import Lines, Weather
-import topic_check
+from topic_check import topic_exists
 
 
 logger = logging.getLogger(__name__)
 
+topic_names = {
+    "weather" : "org.chicago.cta.weather",
+    "arrivals" : "org.chicago.cta.trainstation.arrivals",
+    "stations" : "org.chicago.cta.trainstation.stations",
+    "riders" : "org.chicago.cta.trainstation.riders",
+    "stations_table" : "org.chicago.cta.trainstation.stations-table",
+    "riders_summary_table" : "org.chicago.cta.trainstation.riders-summary-table"
+}
 
 class MainHandler(tornado.web.RequestHandler):
     """Defines a web request handler class"""
@@ -41,12 +48,12 @@ class MainHandler(tornado.web.RequestHandler):
 
 def run_server():
     """Runs the Tornado Server and begins Kafka consumption"""
-    if topic_check.topic_exists("TURNSTILE_SUMMARY") is False:
+    if topic_exists(topic_names["riders_summary_table"]) is False:
         logger.fatal(
             "Ensure that the KSQL Command has run successfully before running the web server!"
         )
         exit(1)
-    if topic_check.topic_exists("org.chicago.cta.stations.table.v1") is False:
+    if topic_exists(topic_names["stations_table"]) is False:
         logger.fatal(
             "Ensure that Faust Streaming is running successfully before running the web server!"
         )
@@ -58,28 +65,28 @@ def run_server():
     application = tornado.web.Application(
         [(r"/", MainHandler, {"weather": weather_model, "lines": lines})]
     )
-    application.listen(8888)
+    application.listen(5000)
 
     # Build kafka consumers
     consumers = [
         KafkaConsumer(
-            "org.chicago.cta.weather.v1",
+            topic_names["weather"],
             weather_model.process_message,
             offset_earliest=True,
         ),
         KafkaConsumer(
-            "org.chicago.cta.stations.table.v1",
+            topic_names["stations_table"],
             lines.process_message,
             offset_earliest=True,
             is_avro=False,
         ),
         KafkaConsumer(
-            "^org.chicago.cta.station.arrivals.",
+            topic_names["arrivals"],
             lines.process_message,
             offset_earliest=True,
         ),
         KafkaConsumer(
-            "TURNSTILE_SUMMARY",
+            topic_names["riders_summary_table"],
             lines.process_message,
             offset_earliest=True,
             is_avro=False,

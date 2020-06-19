@@ -1,11 +1,8 @@
 """Configures KSQL to combine station and turnstile data"""
 import json
 import logging
-
 import requests
-
-import topic_check
-
+from topic_check import topic_exists
 
 logger = logging.getLogger(__name__)
 
@@ -19,14 +16,14 @@ CREATE TABLE turnstile (
     station_name VARCHAR,
     line VARCHAR
 ) WITH (
-    KAFKA_TOPIC='org.chicago.cta.trainstation.visits',
+    KAFKA_TOPIC='org.chicago.cta.trainstation.riders',
     VALUE_FORMAT='avro',
     KEY='timestamp'
 );
 
 CREATE TABLE turnstile_summary 
 WITH ( 
-    KAFKA_TOPIC='org.chicago.cta.trainstation.visits-summary',
+    KAFKA_TOPIC='org.chicago.cta.trainstation.riders-summary-table',
     VALUE_FORMAT='JSON') AS 
     SELECT COUNT(station_id) as count, station_id
     FROM turnstile
@@ -36,7 +33,7 @@ WITH (
 
 def execute_statement():
     """Executes the KSQL statement against the KSQL API"""
-    if topic_check.topic_exists("TURNSTILE_SUMMARY") is True:
+    if topic_exists("org.chicago.cta.trainstation.riders-summary-table") is True:
         return
 
     logging.debug("executing ksql statement...")

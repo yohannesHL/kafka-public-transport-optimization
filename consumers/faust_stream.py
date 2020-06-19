@@ -2,10 +2,6 @@
 import logging
 import faust
 
-import ptvsd
-ptvsd.enable_attach(address=('0.0.0.0', 9898))
-ptvsd.wait_for_attach()
-
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +30,8 @@ class TransformedStation(faust.Record):
 
 app = faust.App("stations-stream", broker="kafka://kafka:9092", store="memory://")
 
-topic = app.topic("io.cta.trainstation.stations", value_type=Station)
-out_topic = app.topic("io.cta.trainstation.stations-transformed", partitions=1)
+topic = app.topic("org.chicago.cta.trainstation.stations", value_type=Station)
+out_topic = app.topic("org.chicago.cta.trainstation.stations-table", partitions=1)
 
 transformed_station_table = app.Table(
    "TransformedStation",
@@ -72,7 +68,7 @@ async def process(stations):
     stations.add_processor(transform)
 
     async for event in stations:
-        
+
         transformed_station_table[event.station_id] = event
 
 

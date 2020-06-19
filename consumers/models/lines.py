@@ -1,7 +1,6 @@
 """Contains functionality related to Lines"""
 import json
 import logging
-
 from models import Line
 
 
@@ -19,9 +18,17 @@ class Lines:
 
     def process_message(self, message):
         """Processes a station message"""
-        if "org.chicago.cta.station" in message.topic():
+
+        prefix = "org.chicago.cta.trainstation"
+        topic = message.topic()
+
+        if topic == f"{prefix}.riders-summary-table":
+            self.green_line.process_message(message)
+            self.red_line.process_message(message)
+            self.blue_line.process_message(message)
+        elif prefix in topic:
             value = message.value()
-            if message.topic() == "org.chicago.cta.stations.table.v1":
+            if topic == f"{prefix}.stations-table":
                 value = json.loads(value)
             if value["line"] == "green":
                 self.green_line.process_message(message)
@@ -31,9 +38,5 @@ class Lines:
                 self.blue_line.process_message(message)
             else:
                 logger.debug("discarding unknown line msg %s", value["line"])
-        elif "TURNSTILE_SUMMARY" == message.topic():
-            self.green_line.process_message(message)
-            self.red_line.process_message(message)
-            self.blue_line.process_message(message)
         else:
-            logger.info("ignoring non-lines message %s", message.topic())
+            logger.info("ignoring non-lines message %s", topic)
