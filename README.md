@@ -47,7 +47,7 @@ When configuring services that run within Docker Compose, like **Kafka Connect y
 
 ### Running the Simulation
 
-There are two pieces to the simulation, the `producer` and `consumer`. Open a terminal window for each of the following components and run them at the same time: 
+There are four pieces to the simulation: the `producer` service, `consumer` service/app, `faust` and `KSQL` stream processing apps. Open a terminal window for each of the following components and run them at the same time: 
 
 #### 1. The `producer`:
 
