@@ -49,7 +49,7 @@ When configuring services that run within Docker Compose, like **Kafka Connect y
 
 There are four pieces to the simulation: the `producer` service, `consumer` service/app, `faust` and `KSQL` stream processing apps. Open a terminal window for each of the following components and run them at the same time: 
 
-#### 1. The `producer`:
+#### 1. Producer service:
 
 1. `cd producers`
 2. `virtualenv venv`
@@ -57,7 +57,7 @@ There are four pieces to the simulation: the `producer` service, `consumer` serv
 4. `pip install -r requirements.txt`
 5. `python simulation.py`
 
-#### 2. The Faust Stream Processing Application:
+#### 2. Faust Stream Processing Application:
 1. `cd consumers`
 2. `virtualenv venv`
 3. `. venv/bin/activate`
@@ -65,14 +65,14 @@ There are four pieces to the simulation: the `producer` service, `consumer` serv
 5. `faust -A faust_stream worker -l info`
 
 
-#### 3. The KSQL Creation Script:
+#### 3. KSQL Creation Script:
 1. `cd consumers`
 2. `virtualenv venv`
 3. `. venv/bin/activate`
 4. `pip install -r requirements.txt`
 5. `python ksql.py`
 
-#### 4. The `consumer`:
+#### 4. Consumer service:
 
 1. `cd consumers`
 2. `virtualenv venv`
