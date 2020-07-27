@@ -1,5 +1,5 @@
 # Public Transport Optimization with Apache Kafka
-A streaming event pipeline using Apache Kafka and its ecosystem. Using public data sourced from the [Chicago Transit Authority](https://www.transitchicago.com/data/) we've constructed an event pipeline around allows us to simulate transport system and display real time status updates. We have used Kafka and ecosystem tools such as REST Proxy, Kafka Connect, Faust Streams and KSQL to accomplish this task.
+A streaming event pipeline using Apache Kafka and its ecosystem. Using public data sourced from the [Chicago Transit Authority](https://www.transitchicago.com/data/) we've constructed an event pipeline to simulate the Chicago train transport system and display real time status updates. We have used Kafka and ecosystem tools such as REST Proxy, Kafka Connect, Faust Streams and KSQL to accomplish this task.
 
 Our architecture looks like so:
 
